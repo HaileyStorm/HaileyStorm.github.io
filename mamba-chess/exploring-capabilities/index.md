@@ -359,7 +359,7 @@ The exploration of next-token prediction models in chess is a developing field. 
 - [Another Transformer-based Chess Model](https://ar5iv.labs.arxiv.org/html/2102.13249)
 - [Ricson Cheng's GitHub Repository](https://github.com/ricsonc/transformers-play-chess)
 - [A Very Unlikely Chess Game](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)
----
+-------
 - [Approximate Methods - Chess](https://approximatemethods.com/chess.html#fn2)
 - [Vinod's Chess Transformers](https://github.com/sgrvinod/chess-transformers)
 - [Adam Karvonen's First Article](https://adamkarvonen.github.io/machine_learning/2024/01/03/chess-world-models.html)
