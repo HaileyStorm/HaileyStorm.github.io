@@ -40,7 +40,7 @@ Together, this reduced the dictionary size to 28 by eliminating tokens for '0', 
 
 This more efficient representation allowed for longer games within the context size and more efficient training.
 
-## 3. d_Model Configuration Experiments and Scaling Analysis
+## 3. Model Configuration Experiments and Scaling Analysis
 
 In the course of developing the Mamba 50M model, a series of experiments were conducted to determine the optimal configuration of d_state, d_model, and layer count. These experiments were critical in understanding the architecture's performance and informed the development of three versions of the Mamba 50M model.
 
