@@ -261,7 +261,7 @@ The experiments conducted provide strong evidence that the Mamba architecture is
 This approach ensures that the Mamba models have a sufficient width and dimensionality to develop a robust internal state and sufficient depth to track variables across long sequences, while also balancing the computational cost of increased d_model and especially d_state parameters. The evidence from the linear probes further supports the conclusion that Mamba's internal state is well-developed and capable of tracking key aspects of the game, such as position strength and board state.
 
 ### 7.3 Hyperparameter Schedule Insights
-As detailed in Section 4.2, reviewing results and logs indicated some of the.
+As detailed in Section 4.2, reviewing results and logs indicated some of the hyperparameter adjustments were sub-optimal.
 
 Despite these potential refinements, the training evaluations indicate that use of AutoClip and a verion of the Warmup-Stable-Decay (WSD) learning rate schedule contributed to achieving models of similar strength to Adam's original model while training on significantly less data (34.8B tokens vs. 61.4B). This provides evidence supporting the effectiveness of these methods, including their use with the Mamba architecture, though future work should focus on refining hyperparameter schedules to further enhance training performance.
 
