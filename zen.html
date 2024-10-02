@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zen Path</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0e6d8;
+            font-family: Arial, sans-serif;
+            color: #5d4037;
+        }
+        #game-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    #stats {
+        width: 200px;
+        background-color: #f0e6d8;
+        padding: 15px;
+        border: 1px solid #8b7355;
+    }
+    .stat-item {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+    .obstacle.complete {
+        background-color: #6b9b37;
+        transition: background-color 0.5s;
+    }
+    .collision-point {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: #ff4444;
+        border-radius: 50%;
+        z-index: 10;
+    }
+    .crossing-point {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: #ff9f43;
+        border-radius: 50%;
+        z-index: 10;
+    }
+        #game {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background-color: #e6d5c0;
+            border: 2px solid #8b7355;
+            margin-bottom: 10px;
+        }
+        .obstacle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #8b7355;
+            border-radius: 50%;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #8b7355;
+            color: #f0e6d8;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #instructions {
+            max-width: 600px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+          .collision-indicator {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 2px solid #ff6b6b;
+        border-radius: 50%;
+        animation: pulse 1s infinite;
+    }
+    .crossing-indicator {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ff9f43;
+        transform: rotate(45deg);
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(1.5); opacity: 0; }
+    }
+        .completion-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(93, 64, 55, 0.9);
+    z-index: 1000;
+    color: #f0e6d8;
+    font-size: 24px;
+}
+        #score {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+    </style>
+</head>
+<body>
+<div id="instructions">
+    <h2>Zen Garden Raking</h2>
+    <p>Draw paths around the stones to create a peaceful garden pattern.</p>
+    <p><strong>Goal:</strong> Create smooth, flowing rake lines near each stone in at least 3 directions.</p>
+    <p>Avoid crossing paths, colliding with stones, and sharp angles.</p>
+</div>
+<div id="game-container">
+    <div id="game">
+        <canvas id="pathCanvas"></canvas>
+    </div>
+    <div id="stats">
+        <div class="stat-item" id="score">Score: 0</div>
+        <br>
+        <div class="stat-item" id="collisions">Collisions: 0</div>
+        <div class="stat-item" id="crossings">Path Crossings: 0</div>
+        <div class="stat-item" id="completedStones">Stones Encircled: 0/5</div>
+        <div class="stat-item" id="pathSegments">Path Segments: 0</div>
+        <div class="stat-item" id="totalLength">Total Length: 0</div>
+        <div class="stat-item" id="avgSmoothness">Avg Smoothness: 0.0</div>
+    </div>
+    <button id="resetBtn">New Garden</button>
+</div>
+
+<script>
+    const game = document.getElementById('game');
+    const canvas = document.getElementById('pathCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const resetBtn = document.getElementById('resetBtn');
+     const statsElements = {
+    score: document.getElementById('score'),
+    collisions: document.getElementById('collisions'),
+    crossings: document.getElementById('crossings'),
+    completedStones: document.getElementById('completedStones'),
+    pathSegments: document.getElementById('pathSegments'),
+    totalLength: document.getElementById('totalLength'),
+    avgSmoothness: document.getElementById('avgSmoothness')
+};
+
+    canvas.width = game.offsetWidth;
+    canvas.height = game.offsetHeight;
+
+    let isDrawing = false;
+    let currentPath = [];
+    let allPaths = [];
+    let obstacles = [];
+    let score = 0;
+    let collisionIndicators = [];
+    let crossingIndicators = [];
+    let smoothnessWindow = [];
+    const SMOOTHNESS_WINDOW_SIZE = 10;
+    const DIRECTION_CHANGE_THRESHOLD = 5;
+    let collisionCount = 0;
+
+    function initGame() {
+        // Clear everything
+        removeCompletionMessage();
+        const collisionPoints = document.querySelectorAll('.collision-point');
+    collisionPoints.forEach(point => point.remove());
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        allPaths = [];
+        obstacles = [];
+        collisionCount = 0;
+        score = 0;
+        scoreElement.textContent = `Score: ${score}`;
+
+        // Remove old obstacles
+        const oldObstacles = document.querySelectorAll('.obstacle');
+        oldObstacles.forEach(obs => obs.remove());
+
+        // Create new obstacles
+        for (let i = 0; i < 5; i++) {
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle';
+            let x, y, tooClose;
+            do {
+                tooClose = false;
+                x = Math.random() * (game.offsetWidth - 40) + 20;
+                y = Math.random() * (game.offsetHeight - 40) + 20;
+
+                // Check distance from other obstacles
+                for (let other of obstacles) {
+                    const dx = x - other.x;
+                    const dy = y - other.y;
+                    if (Math.sqrt(dx*dx + dy*dy) < 50) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+            } while (tooClose);
+
+            obstacle.style.left = (x - 10) + 'px';
+            obstacle.style.top = (y - 10) + 'px';
+            game.appendChild(obstacle);
+            obstacles.push({x, y, radius: 10, coveredDirections: 0});
+        }
+
+        drawSandTexture();
+        updateStats();
+    }
+
+     function updateStats(tempPaths = null) {
+    const pathsToCheck = tempPaths || allPaths;
+    const stats = calculateStats(pathsToCheck);
+
+    statsElements.score.textContent = `Score: ${stats.score}`;
+    statsElements.collisions.textContent = `Collisions: ${stats.collisions}`;
+    statsElements.crossings.textContent = `Path Crossings: ${stats.crossings}`;
+    statsElements.completedStones.textContent = `Stones Encircled: ${stats.completedStones}/5`;
+    statsElements.pathSegments.textContent = `Path Segments: ${pathsToCheck.length}`;
+    statsElements.totalLength.textContent = `Total Length: ${Math.round(stats.totalLength)}`;
+    statsElements.avgSmoothness.textContent = `Avg Smoothness: ${stats.avgSmoothness.toFixed(2)}`;
+}
+
+function updateSmoothness(point) {
+    smoothnessWindow.push(point);
+    if (smoothnessWindow.length > SMOOTHNESS_WINDOW_SIZE) {
+        smoothnessWindow.shift();
+    }
+    return calculateSmoothness();
+}
+
+function calculateSmoothness() {
+    if (smoothnessWindow.length < 3) return 1;
+
+    let totalSmoothness = 0;
+    let directionChanges = 0;
+    let prevDx = smoothnessWindow[1].x - smoothnessWindow[0].x;
+    let prevDy = smoothnessWindow[1].y - smoothnessWindow[0].y;
+    let prevMagnitude = Math.sqrt(prevDx * prevDx + prevDy * prevDy);
+
+    for (let i = 2; i < smoothnessWindow.length; i++) {
+        const dx = smoothnessWindow[i].x - smoothnessWindow[i-1].x;
+        const dy = smoothnessWindow[i].y - smoothnessWindow[i-1].y;
+        const magnitude = Math.sqrt(dx * dx + dy * dy);
+
+        // Skip if the movement is too small
+        if (magnitude < 1 || prevMagnitude < 1) {
+            prevDx = dx;
+            prevDy = dy;
+            prevMagnitude = magnitude;
+            continue;
+        }
+
+        // Normalize vectors
+        const v1x = prevDx / prevMagnitude;
+        const v1y = prevDy / prevMagnitude;
+        const v2x = dx / magnitude;
+        const v2y = dy / magnitude;
+
+        // Calculate dot product of normalized vectors
+        const dotProduct = v1x * v2x + v1y * v2y;
+
+        // Convert to angle (0 to PI)
+        const angle = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
+
+        // Detect sharp turns
+        if (angle > Math.PI / 4) { // 45 degrees
+            directionChanges++;
+        }
+
+        // Calculate smoothness (1 is smooth, 0 is sharp turn)
+        const segmentSmoothness = 1 - (angle / Math.PI);
+        totalSmoothness += segmentSmoothness;
+
+        prevDx = dx;
+        prevDy = dy;
+        prevMagnitude = magnitude;
+    }
+
+    const avgSmoothness = totalSmoothness / (smoothnessWindow.length - 2);
+    return Math.max(0, avgSmoothness - (directionChanges * 0.2));
+}
+
+function calculateStats(paths) {
+    let stats = {
+        score: 0,
+        collisions: 0,
+        crossings: 0,
+        completedStones: 0,
+        totalLength: 0,
+        avgSmoothness: 0
+    };
+
+    if (paths.length > 0) {
+        let totalPathSmoothness = 0;
+
+        paths.forEach(path => {
+            if (path.length < 2) return;
+
+            let pathSmoothnessSum = 0;
+            let windowCount = 0;
+            smoothnessWindow = [];
+
+            path.forEach(point => {
+                updateSmoothness(point);
+                if (smoothnessWindow.length >= 2) {
+                    const windowSmoothness = calculateSmoothness();
+                    if (!isNaN(windowSmoothness)) {
+                        pathSmoothnessSum += windowSmoothness;
+                        windowCount++;
+                    }
+                }
+            });
+
+            const pathSmoothness = windowCount > 0 ? pathSmoothnessSum / windowCount : 0;
+            totalPathSmoothness += pathSmoothness;
+
+            // Calculate length
+            for (let i = 1; i < path.length; i++) {
+                const dx = path[i].x - path[i-1].x;
+                const dy = path[i].y - path[i-1].y;
+                stats.totalLength += Math.sqrt(dx*dx + dy*dy);
+            }
+        });
+
+        stats.avgSmoothness = totalPathSmoothness / paths.length;
+    }
+
+    // Check collisions and crossings
+    stats.collisions = collisionCount;
+    stats.crossings = checkCrossings(paths);
+
+    // Update completed stones
+    updateObstacleCoverage();
+    stats.completedStones = obstacles.filter(obs => obs.coveredDirections >= 3).length;
+
+    // Calculate score
+    stats.score = 1000;
+    stats.score -= paths.length * 100;
+    stats.score -= stats.totalLength / 10;
+    stats.score -= stats.collisions * 200;
+    stats.score -= stats.crossings * 50;
+    stats.score += stats.avgSmoothness * 100;
+    stats.score = Math.max(0, Math.round(stats.score));
+
+    return stats;
+}
+
+    function drawSandTexture() {
+        const sandPattern = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        sandPattern.addColorStop(0, '#e6d5c0');
+        sandPattern.addColorStop(0.5, '#dcc7b0');
+        sandPattern.addColorStop(1, '#e6d5c0');
+
+        ctx.fillStyle = sandPattern;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Add some noise for texture
+        for (let i = 0; i < 5000; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            ctx.fillStyle = Math.random() > 0.5 ? '#eadcc8' : '#d9c4ad';
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+
+    function checkPathCrossings(paths) {
+        let crossings = 0;
+        for (let i = 0; i < paths.length; i++) {
+            for (let j = i + 1; j < paths.length; j++) {
+                for (let k = 1; k < paths[i].length; k++) {
+                    for (let l = 1; l < paths[j].length; l++) {
+                        if (lineIntersects(
+                            paths[i][k-1], paths[i][k],
+                            paths[j][l-1], paths[j][l]
+                        )) {
+                            crossings++;
+                        }
+                    }
+                }
+            }
+        }
+        return crossings;
+    }
+
+    function lineIntersects(p1, p2, p3, p4) {
+        const det = (p2.x - p1.x) * (p4.y - p3.y) - (p4.x - p3.x) * (p2.y - p1.y);
+        if (det === 0) return false;
+
+        const lambda = ((p4.y - p3.y) * (p4.x - p1.x) + (p3.x - p4.x) * (p4.y - p1.y)) / det;
+        const gamma = ((p1.y - p2.y) * (p4.x - p1.x) + (p2.x - p1.x) * (p4.y - p1.y)) / det;
+
+        return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+
+    function calculatePathSmoothness(path) {
+    if (path.length < 4) return 0;
+
+    let smoothnessScore = 0;
+    const segmentLength = 5; // Check every 5 points
+
+    for (let i = 0; i < path.length - segmentLength; i += segmentLength) {
+        const points = path.slice(i, i + segmentLength + 1);
+        smoothnessScore += evaluateSegmentSmoothness(points);
+    }
+
+    return smoothnessScore / Math.floor(path.length / segmentLength);
+}
+
+function evaluateSegmentSmoothness(points) {
+    // Fit a quadratic curve to the points
+    const xSum = points.reduce((sum, p) => sum + p.x, 0);
+    const ySum = points.reduce((sum, p) => sum + p.y, 0);
+    const x2Sum = points.reduce((sum, p) => sum + p.x * p.x, 0);
+    const xySum = points.reduce((sum, p) => sum + p.x * p.y, 0);
+    const x3Sum = points.reduce((sum, p) => sum + p.x * p.x * p.x, 0);
+    const x2ySum = points.reduce((sum, p) => sum + p.x * p.x * p.y, 0);
+
+    const n = points.length;
+
+    // Solve for quadratic coefficients
+    const denominator = (n * x2Sum - xSum * xSum) * (n * x2Sum - xSum * xSum) -
+                       (n * x3Sum - x2Sum * xSum) * (n * xSum - xSum * n);
+
+    if (Math.abs(denominator) < 1e-10) return 0; // Line is too straight
+
+    const a = ((n * x2ySum - x2Sum * ySum) * (n * xSum - xSum * n) -
+               (n * xySum - xSum * ySum) * (n * x3Sum - x2Sum * xSum)) / denominator;
+
+    // Higher absolute value of 'a' indicates more curvature
+    return Math.min(Math.abs(a) * 1000, 1);
+}
+
+function clearIndicators() {
+    collisionIndicators.forEach(indicator => indicator.remove());
+    crossingIndicators.forEach(indicator => indicator.remove());
+    collisionIndicators = [];
+    crossingIndicators = [];
+}
+
+function showCollisionIndicator(x, y) {
+    const indicator = document.createElement('div');
+    indicator.className = 'collision-indicator';
+    indicator.style.left = (x - 15) + 'px';
+    indicator.style.top = (y - 15) + 'px';
+    game.appendChild(indicator);
+    collisionIndicators.push(indicator);
+    setTimeout(() => {
+        indicator.remove();
+        collisionIndicators = collisionIndicators.filter(i => i !== indicator);
+    }, 1000);
+}
+
+function showCrossingIndicator(x, y) {
+    const indicator = document.createElement('div');
+    indicator.className = 'crossing-indicator';
+    indicator.style.left = (x - 5) + 'px';
+    indicator.style.top = (y - 5) + 'px';
+    game.appendChild(indicator);
+    crossingIndicators.push(indicator);
+    setTimeout(() => {
+        indicator.remove();
+        crossingIndicators = crossingIndicators.filter(i => i !== indicator);
+    }, 1000);
+}
+
+function checkCollisions(paths) {
+    let collisionCount = 0;
+    paths.forEach(path => {
+        path.forEach(point => {
+            obstacles.forEach(obstacle => {
+                const dx = point.x - obstacle.x;
+                const dy = point.y - obstacle.y;
+                if (Math.sqrt(dx*dx + dy*dy) < obstacle.radius) {
+                    collisionCount++;
+                    showCollisionPoint(point.x, point.y);
+                }
+            });
+        });
+    });
+    return collisionCount;
+}
+
+function clearCrossingPoints() {
+    const existingPoints = document.querySelectorAll('.crossing-point');
+    existingPoints.forEach(point => point.style.display = 'none');
+}
+
+function checkCrossings(paths) {
+    let crossings = 0;
+    clearCrossingPoints(); // Only clear, don't remove DOM elements
+
+    // Check between different paths
+    for (let i = 0; i < paths.length; i++) {
+        // Check self-intersection within the same path
+        for (let k = 1; k < paths[i].length; k++) {
+            for (let l = k + 2; l < paths[i].length; l++) {
+                if (lineIntersects(
+                    paths[i][k-1], paths[i][k],
+                    paths[i][l-1], paths[i][l]
+                )) {
+                    crossings++;
+                    const intersectionPoint = getIntersectionPoint(
+                        paths[i][k-1], paths[i][k],
+                        paths[i][l-1], paths[i][l]
+                    );
+                    showCrossingPoint(intersectionPoint.x, intersectionPoint.y);
+                }
+            }
+        }
+
+        // Check intersections with other paths
+        for (let j = i + 1; j < paths.length; j++) {
+            for (let k = 1; k < paths[i].length; k++) {
+                for (let l = 1; l < paths[j].length; l++) {
+                    if (lineIntersects(
+                        paths[i][k-1], paths[i][k],
+                        paths[j][l-1], paths[j][l]
+                    )) {
+                        crossings++;
+                        const intersectionPoint = getIntersectionPoint(
+                            paths[i][k-1], paths[i][k],
+                            paths[j][l-1], paths[j][l]
+                        );
+                        showCrossingPoint(intersectionPoint.x, intersectionPoint.y);
+                    }
+                }
+            }
+        }
+    }
+    return crossings;
+}
+
+function calculateAngle(p1, p2, p3) {
+    const v1 = { x: p1.x - p2.x, y: p1.y - p2.y };
+    const v2 = { x: p3.x - p2.x, y: p3.y - p2.y };
+    return Math.abs(Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x));
+}
+
+function showCollisionPoint(x, y) {
+    const point = document.createElement('div');
+    point.className = 'collision-point';
+    point.style.left = (x - 3) + 'px';
+    point.style.top = (y - 3) + 'px';
+    game.appendChild(point);
+    collisionCount++;
+}
+
+function showCrossingPoint(x, y) {
+    // Check if there's already a crossing point nearby
+    const existingPoints = document.querySelectorAll('.crossing-point');
+    for (let point of existingPoints) {
+        const rect = point.getBoundingClientRect();
+        const dx = x - (rect.left + rect.width/2);
+        const dy = y - (rect.top + rect.height/2);
+        if (dx*dx + dy*dy < 25) { // Within 5 pixels
+            point.style.display = 'block';
+            return;
+        }
+    }
+
+    // If no nearby point, create new one
+    const point = document.createElement('div');
+    point.className = 'crossing-point';
+    point.style.left = (x - 3) + 'px';
+    point.style.top = (y - 3) + 'px';
+    game.appendChild(point);
+}
+
+    function updateObstacleCoverage() {
+    const allPathsIncludingCurrent = [...allPaths, currentPath];
+    obstacles.forEach((obstacle, index) => {
+        obstacle.coveredDirections = 0;
+        const directions = [
+            {dx: 1, dy: 0}, {dx: -1, dy: 0},
+            {dx: 0, dy: 1}, {dx: 0, dy: -1}
+        ];
+
+        directions.forEach(dir => {
+            let covered = false;
+            for (let dist = 15; dist <= 45; dist += 5) {
+                const checkPoint = {
+                    x: obstacle.x + dir.dx * dist,
+                    y: obstacle.y + dir.dy * dist
+                };
+
+                allPathsIncludingCurrent.forEach(path => {
+                    path.forEach(point => {
+                        const dx = point.x - checkPoint.x;
+                        const dy = point.y - checkPoint.y;
+                        if (Math.sqrt(dx*dx + dy*dy) < 10) {
+                            covered = true;
+                        }
+                    });
+                });
+            }
+            if (covered) obstacle.coveredDirections++;
+        });
+
+        const obstacleElement = document.querySelectorAll('.obstacle')[index];
+        if (obstacle.coveredDirections >= 3) {
+            obstacleElement.classList.add('complete');
+        } else {
+            obstacleElement.classList.remove('complete');
+        }
+    });
+}
+
+function removeCompletionMessage() {
+    const message = document.querySelector('.completion-message');
+    if (message) {
+        message.remove();
+    }
+}
+
+function getIntersectionPoint(p1, p2, p3, p4) {
+    const denominator = ((p4.y - p3.y) * (p2.x - p1.x)) - ((p4.x - p3.x) * (p2.y - p1.y));
+    const ua = (((p4.x - p3.x) * (p1.y - p3.y)) - ((p4.y - p3.y) * (p1.x - p3.x))) / denominator;
+    return {
+        x: p1.x + (ua * (p2.x - p1.x)),
+        y: p1.y + (ua * (p2.y - p1.y))
+    };
+}
+
+    function isLevelComplete() {
+        updateObstacleCoverage();
+    return obstacles.every(obs => obs.coveredDirections >= 3);
+    }
+
+    function calculateScore() {
+        let newScore = 1000;
+
+        // Penalty for number of paths
+        newScore -= allPaths.length * 100;
+
+        // Penalty for path length
+        const totalLength = allPaths.reduce((sum, path) => {
+            return sum + path.reduce((pathSum, point, i) => {
+                if (i === 0) return pathSum;
+                const dx = point.x - path[i-1].x;
+                const dy = point.y - path[i-1].y;
+                return pathSum + Math.sqrt(dx*dx + dy*dy);
+            }, 0);
+        }, 0);
+        newScore -= totalLength / 10;
+
+        // Check for obstacle collisions
+        let collisionPenalty = 0;
+        allPaths.forEach(path => {
+            path.forEach(point => {
+                obstacles.forEach(obstacle => {
+                    const dx = point.x - obstacle.x;
+                    const dy = point.y - obstacle.y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < obstacle.radius) {
+                        collisionPenalty += 200;
+                    }
+                });
+            });
+        });
+        newScore -= collisionPenalty;
+
+        // Path crossing penalty
+        const crossings = checkPathCrossings(allPaths);
+        newScore -= crossings * 50;
+
+        // Smoothness bonus
+        const smoothnessBonus = allPaths.reduce((sum, path) => {
+            return sum + calculatePathSmoothness(path);
+        }, 0);
+        newScore += smoothnessBonus * 10;
+
+        return Math.max(0, Math.round(newScore));
+    }
+
+    function showCompletionMessage() {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'completion-message';
+    messageDiv.innerHTML = `
+        <div>Garden Complete!</div>
+        <div>Final Score: ${calculateStats(allPaths).score}</div>
+    `;
+    game.appendChild(messageDiv);
+}
+
+function updateStatsDisplay(stats) {
+    statsElements.score.textContent = `Score: ${stats.score}`;
+    statsElements.collisions.textContent = `Collisions: ${stats.collisions}`;
+    statsElements.crossings.textContent = `Path Crossings: ${stats.crossings}`;
+    statsElements.completedStones.textContent = `Stones Encircled: ${stats.completedStones}/5`;
+    statsElements.pathSegments.textContent = `Path Segments: ${allPaths.length + (currentPath.length > 1 ? 1 : 0)}`;
+    statsElements.totalLength.textContent = `Total Length: ${Math.round(stats.totalLength)}`;
+    statsElements.avgSmoothness.textContent = `Avg Smoothness: ${stats.avgSmoothness.toFixed(2)}`;
+}
+
+     function drawPaths() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSandTexture();
+    clearIndicators();
+
+    // Draw paths with quality indicators
+    allPaths.forEach(path => {
+        if (path.length < 2) return;
+
+        // Draw rake effect
+        for (let offset = -6; offset <= 6; offset += 2) {
+            ctx.beginPath();
+            ctx.strokeStyle = offset === 0 ? '#7d6449' : '#8b7355';
+            ctx.lineWidth = offset === 0 ? 2 : 1;
+
+            path.forEach((point, i) => {
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    const prev = path[i-1];
+                    const dx = point.x - prev.x;
+                    const dy = point.y - prev.y;
+                    const angle = Math.atan2(dy, dx) + Math.PI/2;
+
+                    ctx.lineTo(
+                        point.x + Math.cos(angle) * offset,
+                        point.y + Math.sin(angle) * offset
+                    );
+                }
+            });
+            ctx.stroke();
+        }
+    });
+    updateObstacleCoverage();
+
+    // Check for crossings
+    for (let i = 0; i < allPaths.length; i++) {
+        for (let j = i + 1; j < allPaths.length; j++) {
+            for (let k = 1; k < allPaths[i].length; k++) {
+                for (let l = 1; l < allPaths[j].length; l++) {
+                    if (lineIntersects(
+                        allPaths[i][k-1], allPaths[i][k],
+                        allPaths[j][l-1], allPaths[j][l]
+                    )) {
+                        const intersectionPoint = getIntersectionPoint(
+                            allPaths[i][k-1], allPaths[i][k],
+                            allPaths[j][l-1], allPaths[j][l]
+                        );
+                        showCrossingIndicator(intersectionPoint.x, intersectionPoint.y);
+                    }
+                }
+            }
+        }
+    }
+
+    updateObstacleCoverage();
+    if (isLevelComplete()) {
+        ctx.fillStyle = 'rgba(93, 64, 55, 0.9)';
+        ctx.fillRect(canvas.width/2 - 150, canvas.height/2 - 50, 300, 100);
+        ctx.fillStyle = '#f0e6d8';
+        ctx.font = '24px Arial';
+        ctx.fillText('Garden Complete!', canvas.width/2 - 90, canvas.height/2 - 10);
+        ctx.fillText(`Final Score: ${calculateStats(allPaths).score}`, canvas.width/2 - 70, canvas.height/2 + 20);
+    }
+
+    if (isLevelComplete()) {
+        showCompletionMessage();
+    }
+}
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        currentPath = [{x: e.clientX - rect.left, y: e.clientY - rect.top}];
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const point = {x: e.clientX - rect.left, y: e.clientY - rect.top};
+        currentPath.push(point);
+
+        // Check for collisions
+     obstacles.forEach(obstacle => {
+        const dx = point.x - obstacle.x;
+        const dy = point.y - obstacle.y;
+        if (Math.sqrt(dx*dx + dy*dy) < obstacle.radius + 2) { // Added a small buffer
+            showCollisionPoint(point.x, point.y);
+        }
+    });
+
+        const tempPaths = [...allPaths, currentPath];
+        const currentStats = calculateStats(tempPaths);
+    updateStatsDisplay(currentStats);
+
+        updateObstacleCoverage([...allPaths, currentPath]);
+        drawPaths();
+        checkCrossings(tempPaths);
+
+        // Draw current path
+        for (let offset = -6; offset <= 6; offset += 2) {
+            ctx.beginPath();
+            ctx.strokeStyle = offset === 0 ? '#7d6449' : '#8b7355';
+            ctx.lineWidth = offset === 0 ? 2 : 1;
+
+            currentPath.forEach((point, i) => {
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    const prev = currentPath[i-1];
+                    const dx = point.x - prev.x;
+                    const dy = point.y - prev.y;
+                    const angle = Math.atan2(dy, dx) + Math.PI/2;
+
+                    ctx.lineTo(
+                        point.x + Math.cos(angle) * offset,
+                        point.y + Math.sin(angle) * offset
+                    );
+                }
+            });
+            ctx.stroke();
+        }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+    if (currentPath.length > 1) {
+        allPaths.push(currentPath);
+        updateStats();
+    }
+    isDrawing = false;
+    currentPath = [];
+    drawPaths();
+});
+
+    resetBtn.addEventListener('click', initGame);
+
+    initGame();
+</script>
+</body>
+</html>
