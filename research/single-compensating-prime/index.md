@@ -6,7 +6,7 @@ permalink: /research/single-compensating-prime/
 
 [Read the paper — PDF, 36 pages](paper.pdf) · [TeX source](paper.tex) · [Markdown source](https://github.com/HaileyStorm/QuasiRiemannTracker/blob/94fbacd5db79f62ef9bd316a6a41ac51627154b5/proofs/single-prime-29-33-20261010/manuscript/zeta_zero_free_4_33_self_contained.md)
 
-The appeal of this manuscript is how compact the self-contained argument is for **c = 4/33**, giving a zero-free half-plane **Re(s) > 29/33**, with the usual pole exclusions. [Shiva Kintali’s shorter proof for c = 1/48](https://shivakintali.github.io/papers/QRH.pdf) is what started me on this.
+The appeal of this manuscript is how compact the self-contained argument is for **c = 4/33**, giving a zero-free half-plane **Re(s) > 29/33**, with the usual pole exclusions. [Shiva Kintali’s proof for c = 1/48](https://shivakintali.github.io/papers/QRH.pdf) is what started me on this. His manuscript is **27 pages**; this one is **36 pages** for c = 4/33.
 
 This is a **single-compensating-prime alternative proof, with an independently usable unconditional moving-radical mixed moment**. It is a non-record result: the 29/33 boundary is weaker than 7/8. The manuscript treats the Riemann zeta function, all Dirichlet characters of positive modulus, and finite-order Hecke characters over the Eisenstein field. Appendix D.3 supplies the unconditional mixed-moment theorem separately from the zero-free endpoint.
 
