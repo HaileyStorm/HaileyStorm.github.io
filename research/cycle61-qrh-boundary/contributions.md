@@ -6,34 +6,59 @@ permalink: /research/cycle61-qrh-boundary/contributions/
 
 **Hailey Collet** · [HaileyCollet@gmail.com](mailto:HaileyCollet@gmail.com)
 
+Updated 13 October 2026
+
 [Back to the paper and downloads](/research/cycle61-qrh-boundary/)
 
-I initiated and directed the research program that produced this proof. My contribution includes choosing its targets and sources, proposing questions and approaches, reconciling assumptions, and deciding which arguments to retain, check and combine. I am the sole human author of the resulting manuscript and formalization package. The detailed derivations, substantial drafting and Lean implementation were developed with AI assistance.
+I initiated and directed the QRH research program that led to the selected **c = 0.125139** written proof. My work included setting the objectives, originating research questions, choosing sources and proof branches, challenging dependencies, and organizing comparative research and integration. I am the sole human author of the resulting manuscript and formalization package.
 
-## My role in the research
+The detailed analytic derivations were produced with AI assistance. **Astra and GPT-6.1 Sol performed the Lean formalization.** I commissioned and coordinated that work and transferred its results back into the continuing research; I did not personally formalize the proof. Reused mathematics retains its original authorship, notices and licenses.
 
-The work required decisions about the intended claim, which earlier results could support it, and how the separate pieces should fit together.
+## The original written-proof handoff
 
-- **Choosing the targets and directing the investigation.** I selected the research targets and sources, proposed questions and approaches, and directed the continuing work on the zero-free boundary. The final result preserves the all-Dirichlet scope, the separate zeta and Hecke comparisons, and the principal-pole exception.
-- **Selecting and combining arguments.** I decided what to retain, check and combine as the program developed. Its earlier work supplied reflection, variable-moment, detector and physical-source machinery. Those components form part of the foundation used by the present proof.
-- **Bringing in outside work.** I brought Gao's local refinement into the program and asked for its contribution to remain explicit. Integrating it meant reconciling its assumptions and source conventions with the existing argument, while retaining the original contributors' credit.
-- **Research and editorial judgment.** I selected or adapted research prompts, including some written with AI assistance, and directed the assembly and checking of the argument. The final manuscript, source package and verification account distinguish the mathematical claim from the evidence available for it.
+The selected written-proof packet was prepared on **11 October 2026 at 9:47 p.m. MDT (12 October, 03:47 UTC)**. That preparation point separates the research leading to the packet from the subsequent formalization and continuing program. It is not a claimed start time for the formalizer.
 
-These contributions describe my role in directing and integrating the research. The mathematical developments credited to this program include detailed derivations produced with AI assistance. In particular, I did not personally derive or write the earlier 4/33 proof.
+The contributions below describe both decisions that shaped the selected proof and exploratory directions investigated along the way. An idea's inclusion in the research agenda does not mean it became an ingredient of the final proof.
 
-## What this research program contributed
+## My contributions before the handoff
 
-The earlier [single-compensating-prime work](/research/single-compensating-prime/) and [quartic-boundary work](/research/quartic-qrh-boundary/) developed the reflection, variable moments, physical detector and source architecture used here. The supplied proof packet credits that earlier QRH work to my program. Its attribution carries forward into this result, alongside the underlying OpenAI and Akash Levy contributions.
+- **Choosing the mathematical objective.** I began by asking for a shorter, simpler, self-contained argument, specializing to Riemann zeta where useful while increasing the zero-free constant. I set targets including 1/8 and 1/6, and made concision a lower priority after the reported crossing of 1/8. I separately selected the concise 4/33 branch for mathematical communication.
+- **Challenging the dependency standard.** I questioned whether the claimed standalone proof still required earlier zero-free papers, asked for the specialized intermediate arguments to be supplied, and distinguished those obligations from general foundations that could reasonably be cited. I identified and pressed the dependency question; the missing analytic derivations were model work.
+- **Proposing alternative geometries.** I suggested arguments starting from the left of the critical strip, interior bands and horizontal strips, direct confinement around the critical line, and regions approaching or touching it. My examples included the band between 2/3 and 1/√2. These were mathematical questions and proposed search directions.
+- **Proposing bridges from tilings to arithmetic.** I introduced plane tilings and Einstein tiles, then suggested tori, metric topology, ergodicity, homographies and covering projections as possible connections to the proof. The resulting conditional adapters and obstructions were developed by the models; a proved arithmetic saving from those tilings was not established.
+- **Directing small-block searches.** I proposed systematic grouping of a few Möbius blocks, dynamic programming and optimization methods such as simulated annealing, stochastic hill climbing and basin hopping. The ensuing restricted estimates and counterexamples to simple state compression were model-derived. My contribution was the specific search proposal and its continuation.
+- **Designing comparative and creative research.** I introduced externally sourced creativity methods, including mathematical-object generation through randomized Akinator-style search. I commissioned comparable brainstorming and forward-research streams from common inputs, with separate criticism and synthesis. I required a coherent reconciled argument and a separate research agenda, rather than treating a collection of responses as completed integration. The external methods retain their original credit.
+- **Selecting sources and usable proof branches.** I supplied and expanded the source material, directed comparisons with the current argument, and sought reuse of earlier formalizations. I brought Gao's local refinement into the program and required its assumptions and source lineage to remain explicit. I coordinated the selection and preparation of the written handoff for formalization.
+- **Preserving continuity.** I required portable handoffs, retention of useful failures and unfinished approaches, and enough context to avoid repeating earlier investigations. I directed effort toward stronger results while preserving shorter proof branches for communication.
 
-The later development extends the required height-uniform density range from **[17/20, 7/8] to [33/40, 7/8]**, enlarges the local numerical region, and supplies the rational endpoint **c = 0.125139**. Cycle61 completes the uniform main and error estimates, the common-probe argument and the final zero-exclusion assembly in Lean. The paper explains the source normalization, order of choices and full error estimate used by that construction.
+Some research prompts were written by assistants and then selected, assembled or transmitted by me. That selection is part of my research direction; it does not make every embedded formula a human-originated proposal. I also did not personally derive or write the earlier 4/33 proof.
 
-This is an account of the contributed research and its development. The older numerical endpoints are not proofs of the new endpoint; the current result has its own source and verification records.
+## Formalization after the handoff
 
-## AI assistance
+Astra and GPT-6.1 Sol carried out the detailed Lean development and the mathematical work needed to complete the formal assembly. My role was commissioning, coordination, source transfer and directing subsequent comparison with the continuing research. Concrete formalization-stage parameter choices and auxiliary-theorem changes belong to that model work.
 
-Detailed analytic derivations and substantial drafting were developed with AI assistance, mainly GPT6-Pro and non-Pro Astra, with contributions from GPT 6.1 Sol, Grok 4.7 and Gemini 3.1 Pro. Codex also assisted with Lean formalization and integration. These are the tools used across the research program, as recorded in my authorship account; they are not a lemma-by-lemma assignment of credit.
+The supplied written proof already contained the enlarged density range and numerical endpoint certificate. The completed development establishes the unconditional endpoint at **c = 125139/1000000**, with the strict zero-free boundary **874861/1000000** and the principal-pole exception. The final paper explains the source normalization, order of choices and complete error estimate used by the Lean construction.
 
-AI review and proof verification serve different purposes. The [verification record](https://github.com/HaileyStorm/QuasiRiemannTracker/blob/fb6d4fd11aeaff0b37dd96bad3b274ce28a5c08b/proofs/cycle61-c0125139/Verification.md) identifies the actual compilation, statement-comparison and kernel checks. The [submission PR](https://github.com/GTimG/QuasiRiemannTracker/pull/42) reports the separate protected tracker check.
+The [verification record](https://github.com/HaileyStorm/QuasiRiemannTracker/blob/fb6d4fd11aeaff0b37dd96bad3b274ce28a5c08b/proofs/cycle61-c0125139/Verification.md) identifies the actual compilation, statement-comparison and kernel checks, including the limits of the adapted local replay environment. The [submission PR](https://github.com/GTimG/QuasiRiemannTracker/pull/42) reports the separate protected tracker check. Attribution and AI review do not substitute for those checks.
+
+## Continuing research and collaboration
+
+After the original packet was prepared, I continued directing the program. My contribution account records these further decisions on 13 October:
+
+- **Focusing on signed cancellation.** I challenged whether the research was directly attacking the stubborn signed remainder, supplied Mertens-related references, suggested Selberg sieve weights and Brun's pure sieve, and brought in the separate Hexagon paper for assessment. Applicability, ensuing reductions and remaining estimates were assessed by the research agents; this intervention is not a claim of a larger proved constant.
+- **Returning the formalized result to research.** I supplied the completed formalization package and its comparison with the original handoff, asking the research effort to identify anything useful for its continuing work.
+- **Designing a shared component catalogue.** I proposed combining the local attempt index and upstream library, with searchable fields, tags, linked browsing, related and superseded components, and support for reusable mathematical and Lean material. I assigned initial Lean population to the formalization effort.
+- **Defining public and private usage records.** I asked for public paper and submission links on both mathematical and formal components, with internal research-cycle usage kept in a private index. I requested contribution and citation guidance for humans and agents and regular synchronization of the shared catalogue.
+- **Setting collaboration and licensing choices.** I proposed a separate public catalogue repository linked into private QRH, selected MIT for new catalogue tools and CC BY 4.0 for original catalogue descriptions, and required imported material to retain its existing terms. These catalogue choices are separate from the Apache-2.0 license of this paper and its new proof code.
+- **Designing a review workflow.** I proposed autonomous mathematical and technical PR review, local workers with offline catch-up, inexpensive Jev preliminary checks, a first substantive review by GPT-6.1 Sol at High, and Astra at xhigh when the mathematics warrants escalation. Human involvement would remain available for nontechnical decisions. Software implementation and deployment are agent work; this account records the design decisions without claiming the workflow had already reviewed an external PR.
+
+These later contributions belong to the continuing research and collaboration program. They are not retroactive contributions to the mathematical content of the original c = 0.125139 packet.
+
+## AI assistance across the program
+
+The research account records assistance from GPT6-Pro, non-Pro Astra, GPT-6.1 Sol, Grok 4.7 and Gemini 3.1 Pro. The explicit attribution for the Lean formalization is Astra and GPT-6.1 Sol. These names identify tools used across the program, rather than assigning every lemma to a model without supporting records.
+
+This page adapts my updated contribution account of 13 October. Its detailed chronology and private working references are retained in the research record. The account covers the original research, selected later source integration, formalization and the later decisions described above; it does not assign a distinct human intervention to every numbered research cycle.
 
 ## Upstream mathematics and implementation
 
