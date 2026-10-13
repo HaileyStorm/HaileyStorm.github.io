@@ -1,1 +1,5 @@
 theme: minima
+header_pages:
+  - research/single-compensating-prime/index.md
+  - research/quartic-qrh-boundary/index.md
+  - research/cycle61-qrh-boundary/index.md
