@@ -11,3 +11,5 @@ permalink: /research/cycle092-ordinary-qrh/chart/
 The chart was reconstructed from the [GTimG/QuasiRiemannTracker source at commit 42cf5415cfaa4205caaa25ab11160724606cdc33](https://github.com/GTimG/QuasiRiemannTracker/tree/42cf5415cfaa4205caaa25ab11160724606cdc33) and public catalogue snapshot as of 15 November 2026, retrieved on 19 November 2026. It follows that snapshot’s rational ranking coordinates and public-announcement chronology. An exact-root theorem can be stronger than its plotted rational coordinate.
 
 Source code and data credit: GTimG/QuasiRiemannTracker and its credited contributors. The upstream [Apache-2.0 licence](../tracker-LICENSE) is retained. The projection is a separate image; no live tracker data or chart has been changed. Consult the [live tracker](https://gtimg.github.io/QuasiRiemannTracker/) for its current accepted frontier.
+
+[Check for the approved Cycle092 chart](../approved-chart/). This separate page checks the public catalogue when opened or refreshed and shows no approved chart until the exact submission is published.
