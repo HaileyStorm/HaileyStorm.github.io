@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "record": "Cycle092",
+  "statement": {
+    "c": "63333603/500000000",
+    "theta": "436666397/500000000",
+    "scope": "All Dirichlet characters of every positive modulus; strict open half-plane. The principal pole at 1 is excluded."
+  },
+  "source_commit": "50a933d719e4adf2775fabe9774a53000dfea522",
+  "public_entry_module": "Candidate.Main",
+  "public_entry_theorem": "Candidate.bound",
+  "public_entry_file": "src/Candidate/Main.lean",
+  "public_entry_sha256": "f28b757875b479ce8ca0db7411adf7a2b0470f6f3c6b3843de037b37f99ff0d1",
+  "proof_root_in_submission": "src/Candidate/C092/transport/Cycle092Record.lean",
+  "proof_root_in_submission_sha256": "2a61fe3cccc9ae2b8aa10c9b716b2c5b1e392119ca9ade2728971b0766a4bfab",
+  "local_lean": {
+    "toolchain": "leanprover/lean4:v4.34.1",
+    "compiler_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+    "compiled_development_root_sha256": "005e7ae5a54853586d9d591ce45814ec4ca023191ca5fafc935eedd0509711cd",
+    "compiled_development_object_sha256": "3e2d9f30e62c7f09d30bf5dd93b772442046f9aed2b976695a6290cca0f6c666",
+    "build_exit": 0,
+    "separate_signature_and_axiom_audit_exit": 0,
+    "axioms": {
+      "QRH.Cycle092.hecke_and_dirichlet_record": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QRH.Cycle092.dirichlet_nonvanishing": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "checked_utc": "2026-11-20T04:06:57.941023+00:00",
+    "scope": "The project Lean compiler checked the unconditional source; a separate Lean process loaded it and checked the exact Dirichlet signature and the axiom lists. Public submission module paths were then normalized."
+  },
+  "official_prepare": {
+    "runner_commit": "42cf5415cfaa4205caaa25ab11160724606cdc33",
+    "exit": 0,
+    "complete_build_order": 6730,
+    "canonical_statement_comparison": "pending protected replay"
+  },
+  "protected_verification": "pending",
+  "written_proof": {
+    "pull_request": "https://github.com/rohanarun/quasi-rh-hillclimb/pull/45",
+    "source_commit": "1affb4664d550a568e32be35238445e3831ed237"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "record": "Cycle092",
+  "checked_utc": "2026-11-20T05:53:05.332888+00:00",
+  "source_commit": "50a933d719e4adf2775fabe9774a53000dfea522",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "statement": {
+    "gain": "63333603/500000000",
+    "boundary": "436666397/500000000",
+    "strict_boundary": true,
+    "scope": "All ordinary complex Dirichlet characters at each fixed positive presented modulus, including imprimitive presentations and all heights; principal pole excluded."
+  },
+  "public_entry_module": "Candidate.Main",
+  "public_entry_theorem": "Candidate.bound",
+  "public_entry_file": "src/Candidate/Main.lean",
+  "public_entry_sha256": "f28b757875b479ce8ca0db7411adf7a2b0470f6f3c6b3843de037b37f99ff0d1",
+  "proof_root_in_submission": "src/Candidate/C092/transport/Cycle092Record.lean",
+  "proof_root_in_submission_sha256": "2a61fe3cccc9ae2b8aa10c9b716b2c5b1e392119ca9ade2728971b0766a4bfab",
+  "source_archive_sha256": "193b83c75a035232ef2060b45d8b2ad3138d415b37beaa0d577e3d27c89189b0",
+  "staged_lean": {
+    "status": "PASS",
+    "candidate_source_modules": 2325,
+    "approved_dependency_modules": 4405,
+    "module_failures": 0,
+    "all_source_compilers_exit": 0,
+    "canonical_signature_audit_exit": 0,
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "compiler_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+    "audit_source_sha256": "97f400a9496482ab52f0e4305b3022aebadb143ca414412d1b96997a9734ccf0",
+    "audit_log_sha256": "07f817a44385a0e5c996310aed4e9a1d13adc87e5860ccb78ad7dc696579eac1",
+    "old_project_objects_used": false,
+    "controlled_resume": {
+      "first_phase_successful_modules_reused": 245,
+      "remaining_modules": 2080,
+      "same_immutable_source_and_build_keys": true
+    },
+    "compilation_scope": "All 2325 submitted Candidate sources compiled across the staged run; 245 first-phase successes were retained after controlled scheduler resume. The 4405 pinned approved dependency objects were reused, not freshly compiled in this run."
+  },
+  "protected_verification": "pending",
+  "canonical_independent_kernel_replay": "not_established_by_this_receipt",
+  "tracker_admission": "pending",
+  "formal_submission": {
+    "pull_request": "https://github.com/GTimG/QuasiRiemannTracker/pull/144",
+    "source_commit": "50a933d719e4adf2775fabe9774a53000dfea522"
+  },
+  "source_evidence": {
+    "sealed_handoff_sha256": "2ee5d592e2b9bac0084bb70059c3c14b5e4a9cda330dcd60e9d60ed897e1b684",
+    "source_build_report_sha256": "d69be23be0f9b7f8ea1ad2bcc11169a29fdc94ac81ddddc2fb30589a4dded34f",
+    "module_receipt_manifest_sha256": "c311fc87c0f93840c16c66cea79202b4c41196080c1fbfaded9fee4bb216cf48"
+  }
+}
